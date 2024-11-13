@@ -7,7 +7,6 @@
     <table class="table mt-3">
         <thead>
             <tr>
-                <th>ID</th>
                 <th>Product Name</th>
                 <th>Quantity</th>
                 <th>Price</th>
@@ -17,10 +16,9 @@
         <tbody>
             @foreach($inventory as $product)
                 <tr>
-                    <td>{{ $product->id }}</td>
                     <td>{{ $product->product_name }}</td>
                     <td>{{ $product->product_quantity }}</td>
-                    <td>{{ $product->product_price }}</td>
+                    <td>&#8377; {{ $product->product_price }}</td>
                     <td>
                         <a href="{{ route('inventory.edit', $product->id) }}" class="btn btn-warning">Edit</a>
                         <form action="{{ route('inventory.destroy', $product->id) }}" method="POST" style="display:inline;">
@@ -33,5 +31,14 @@
             @endforeach
         </tbody>
     </table>
+
+    <!-- Pagination Links -->
+    <div class="d-flex justify-content-between mt-3">
+        <div></div> <!-- Empty div to balance alignment -->
+        <div>
+            {{ $inventory->links('pagination::bootstrap-4') }} <!-- Bootstrap 4 pagination style -->
+        </div>
+        <div></div> <!-- Empty div to balance alignment -->
+    </div>
 </div>
 @endsection

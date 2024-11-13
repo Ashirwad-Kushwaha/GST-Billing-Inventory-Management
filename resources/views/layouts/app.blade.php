@@ -1,36 +1,7 @@
 <style>
-    /* Navbar Styles */
-    .navbar-custom {
-        background-color: #007bff;
-        padding: 1rem 2rem;
-    }
-
-    .navbar-custom .navbar-brand,
-    .navbar-custom .nav-link {
-        color: white;
-        font-size: 1.1rem;
-        font-weight: 600;
-    }
-
-    .navbar-custom .navbar-toggler {
-        border-color: rgba(255, 255, 255, 0.5);
-    }
-
-    .navbar-custom .navbar-toggler-icon {
-        background-color: white;
-    }
-
-    .navbar-custom .dropdown-menu {
-        background-color: #333;
-        border: none;
-    }
-
-    .navbar-custom .dropdown-item {
-        color: white;
-    }
-
-    .navbar-custom .dropdown-item:hover {
-        background-color: #0056b3;
+    .home {
+        padding-top: 2rem;
+        padding-bottom: 2rem;
     }
 </style>
 
@@ -124,7 +95,7 @@
         </nav>
 
         <!-- Main Content -->
-        <main>
+        <main class="home">
             @yield('content')
         </main>
     </div>

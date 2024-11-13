@@ -20,9 +20,9 @@
             <thead>
                 <tr>
                     <th>Description</th>
-                    <th>Rate (₹)</th>
+                    <th>Rate (&#8377;)</th>
                     <th>Quantity</th>
-                    <th>Amount (₹)</th>
+                    <th>Amount (&#8377;)</th>
                     <th>Action</th>
                 </tr>
             </thead>
@@ -34,7 +34,9 @@
                     <td><input type="number" step="0.01" name="items[0][rate]" class="form-control rate" required readonly></td>
                     <td><input type="number" name="items[0][quantity]" class="form-control quantity" required min="1" max="1"></td>
                     <td><input type="number" step="0.01" name="items[0][amount]" class="form-control amount" readonly></td>
-                    <td><span class="remove-btn">Remove</span></td>
+                    <td>
+                        <button type="button" class="btn btn-danger remove-btn">Remove</button>
+                    </td>
                 </tr>
             </tbody>
         </table>
@@ -45,20 +47,20 @@
                 <table class="table">
                     <tr>
                         <th>Subtotal:</th>
-                        <td>₹ <span id="subtotal">0.00</span></td>
+                        <td>&#8377; <span id="subtotal">0.00</span></td>
                     </tr>
                     <tr>
                         <th>GST (18%):</th>
-                        <td>₹ <span id="gst">0.00</span></td>
+                        <td>&#8377; <span id="gst">0.00</span></td>
                     </tr>
                     <tr>
                         <th>Grand Total:</th>
-                        <td>₹ <span id="grand_total">0.00</span></td>
+                        <td>&#8377; <span id="grand_total">0.00</span></td>
                     </tr>
                 </table>
             </div>
         </div>
-        <button type="submit" class="btn btn-primary">Generate Bill</button>
+        <button type="submit" class="btn btn-primary" id="generate-bill">Generate Bill</button>
     </form>
 </div>
 
@@ -74,8 +76,7 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
     let itemIndex = 1;
-
-    // Function to recalculate amounts
+    let selectedItems = [];
     function recalculate() {
         let subtotal = 0;
         $('#bill-items-table tbody tr').each(function() {
@@ -93,46 +94,63 @@
         $('#grand_total').text(grand_total.toFixed(2));
     }
 
-    // Add new item row
     $('#add-item').click(function() {
-        let newRow = `
-            <tr>
-                <td>
-                    <input type="text" name="items[${itemIndex}][description]" class="form-control description" required list="item-list" autocomplete="off">
-                </td>
-                <td><input type="number" step="0.01" name="items[${itemIndex}][rate]" class="form-control rate" required readonly></td>
-                <td><input type="number" name="items[${itemIndex}][quantity]" class="form-control quantity" required min="1" max="1"></td>
-                <td><input type="number" step="0.01" name="items[${itemIndex}][amount]" class="form-control amount" readonly></td>
-                <td><span class="remove-btn">Remove</span></td>
-            </tr>
-        `;
-        $('#bill-items-table tbody').append(newRow);
-        itemIndex++;
+        let lastRow = $('#bill-items-table tbody tr:last');
+        let description = lastRow.find('.description').val();
+        let rate = lastRow.find('.rate').val();
+        let quantity = lastRow.find('.quantity').val();
+
+        if (description && rate && quantity) {
+            if (selectedItems.includes(description)) {
+                alert('Item already selected.');
+                lastRow.find('.description').val('');
+                lastRow.find('.rate').val('');
+                lastRow.find('.quantity').val('');
+                lastRow.find('.amount').val('');
+                return;
+            }
+            selectedItems.push(description);
+            let newRow = `
+                <tr>
+                    <td>
+                        <input type="text" name="items[${itemIndex}][description]" class="form-control description" required list="item-list" autocomplete="off">
+                    </td>
+                    <td><input type="number" step="0.01" name="items[${itemIndex}][rate]" class="form-control rate" required readonly></td>
+                    <td><input type="number" name="items[${itemIndex}][quantity]" class="form-control quantity" required min="1" max="1"></td>
+                    <td><input type="number" step="0.01" name="items[${itemIndex}][amount]" class="form-control amount" readonly></td>
+                    <td>
+                        <button type="button" class="btn btn-danger remove-btn">
+                            <i class="fas fa-trash-alt"></i> Remove
+                        </button>
+                    </td>
+                </tr>
+            `;
+            $('#bill-items-table tbody').append(newRow);
+            itemIndex++;
+        } else {
+            alert('Please fill in all fields before adding a new item.');
+        }
     });
 
-    // Remove item row
     $(document).on('click', '.remove-btn', function() {
         $(this).closest('tr').remove();
+        selectedItems = selectedItems.filter(item => item !== $(this).closest('tr').find('.description').val());
         recalculate();
     });
 
-    // Recalculate on input change
     $(document).on('input', '.rate, .quantity', function() {
         recalculate();
     });
 
-    // Populate rate and stock when description is selected
     $(document).on('input', '.description', function() {
         let description = $(this).val();
         let option = $('#item-list option').filter(function() {
             return $(this).val() === description;
         });
 
-        // Get the rate and stock from the matching option
         let rate = option.data('rate');
         let stock = option.data('stock');
 
-        // Set the rate and max quantity if data is available
         if (rate !== undefined && stock !== undefined) {
             $(this).closest('tr').find('.rate').val(rate);
             $(this).closest('tr').find('.quantity').attr('max', stock);
@@ -140,7 +158,35 @@
         }
     });
 
-    // Initial calculation
+    $('#generate-bill').click(function(e) {
+        let items = [];
+        $('#bill-items-table tbody tr').each(function() {
+            let description = $(this).find('.description').val();
+            let rate = parseFloat($(this).find('.rate').val()) || 0;
+            let quantity = parseInt($(this).find('.quantity').val()) || 0;
+            let amount = rate * quantity;
+            items.push({
+                description: description,
+                rate: rate,
+                quantity: quantity,
+                amount: amount,
+            });
+        });
+
+        let duplicates = items.filter((item, index, self) =>
+            index !== self.findIndex((t) => (
+                t.description === item.description &&
+                t.rate === item.rate &&
+                t.quantity === item.quantity &&
+                t.amount === item.amount
+            )));
+        if (duplicates.length > 0) {
+            alert('Duplicate items found.');
+            e.preventDefault();
+        }
+    });
+
     recalculate();
 </script>
 @endsection
+

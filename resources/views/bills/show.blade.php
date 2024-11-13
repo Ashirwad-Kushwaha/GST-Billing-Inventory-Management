@@ -63,15 +63,15 @@
 <body>
   <nav class="navbar navbar-custom navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="/">Bill Management System</a>
+            <a class="navbar-brand" href="/">GST-BILLING-INVENTORY-MANAGEMENT</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
-                  <li class="nav-item">
-            <a class="nav-link" href="/">Home</a> <!-- Home Link -->
-          </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('applications.create') }}">Create Application</a>
                     </li>
@@ -82,8 +82,42 @@
                         <a class="nav-link" href="{{ route('bills.index') }}">Bills History</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('sales') }}">Sales</a> <!-- Sales Link -->
+                        <a class="nav-link" href="{{ route('inventory.index') }}">Inventory</a>
                     </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('sales') }}">Sales</a>
+                    </li>
+                    @guest
+                            @if (Route::has('login'))
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('login') }}">{{ __('Login') }}</a>
+                                </li>
+                            @endif
+
+                            @if (Route::has('register'))
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ route('register') }}">{{ __('Register') }}</a>
+                                </li>
+                            @endif
+                        @else
+                            <li class="nav-item dropdown">
+                                <a id="navbarDropdown" class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" v-pre>
+                                    {{ Auth::user()->name }}
+                                </a>
+
+                                <div class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                    <a class="dropdown-item" href="{{ route('logout') }}"
+                                       onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();">
+                                        {{ __('Logout') }}
+                                    </a>
+
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+                                        @csrf
+                                    </form>
+                                </div>
+                            </li>
+                        @endguest
                 </ul>
             </div>
         </div>
@@ -96,8 +130,8 @@
           <table>
             <tr>
               <td>
-                <h2>Invoice</h2>
-                Application: {{ $application->title }}<br>
+                <h2>Ashirwad Edibles Wholesale</h2>
+                Buyer: {{ $application->title }}<br>
                 Created: {{ $bill->created_at->format('d-m-Y') }}
               </td>
             </tr>
@@ -107,9 +141,9 @@
 
       <tr class="heading">
         <td>Description</td>
-        <td>Rate (₹)</td>
+        <td>Rate (&#8377;)</td>
         <td>Quantity</td>
-        <td>Amount (₹)</td>
+        <td>Amount (&#8377;)</td>
       </tr>
 
       @foreach ($bill->billItems as $item)
@@ -123,22 +157,24 @@
 
       <tr class="total">
         <td colspan="3" class="text-end">Subtotal:</td>
-        <td>₹ {{ number_format($bill->subtotal, 2) }}</td>
+        <td>&#8377; {{ number_format($bill->subtotal, 2) }}</td>
       </tr>
       <tr class="total">
         <td colspan="3" class="text-end">GST (18%):</td>
-        <td>₹ {{ number_format($bill->gst, 2) }}</td>
+        <td>&#8377; {{ number_format($bill->gst, 2) }}</td>
       </tr>
       <tr class="total">
         <td colspan="3" class="text-end">Grand Total:</td>
-        <td>₹ {{ number_format($bill->grand_total, 2) }}</td>
+        <td>&#8377; {{ number_format($bill->grand_total, 2) }}</td>
       </tr>
     </table>
 
-    <!-- Return Home Button -->
+  
     <div class="text-center mt-4">
-      <a href="{{ url('/') }}" class="btn btn-primary">Return Home</a>
-    </div>
+    <a href="{{ route('bills.downloadPdf', ['application' => $application->id, 'bill' => $bill->id]) }}" class="btn btn-success">Download PDF</a>
+    <a href="{{ url('/') }}" class="btn btn-primary">Return Home</a>
+</div>
+
   </div>
 </body>
 

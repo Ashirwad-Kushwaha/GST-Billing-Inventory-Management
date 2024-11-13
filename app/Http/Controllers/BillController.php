@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use Barryvdh\DomPDF\Facade as PDF;
 use App\Models\Application;
 use App\Models\Bill;
 use App\Models\BillItem;
 use App\Models\Inventory;
+use Barryvdh\DomPDF\Facade\Pdf as FacadePdf;
+use Barryvdh\DomPDF\PDF as DomPDFPDF;
 use Illuminate\Http\Request;
 
 class BillController extends Controller
@@ -25,6 +28,19 @@ class BillController extends Controller
         // Return the view with the applications
         return view('bills.create', compact('applications'));
     }
+
+    public function downloadPdf($application_id, $bill_id)
+    {
+        $application = Application::findOrFail($application_id);
+        $bill = Bill::with('billItems')->findOrFail($bill_id);
+
+        // Generate the PDF
+        $pdf = FacadePdf::loadView('bills.pdf_invoice', compact('application', 'bill'));
+
+        // Download the PDF as a file
+        return $pdf->download('invoice-' . $bill_id . '.pdf');
+    }
+
 
     // Show form to create bill for a specific application
     public function create($application_id)

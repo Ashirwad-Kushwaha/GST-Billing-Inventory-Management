@@ -11,14 +11,14 @@
             <thead>
                 <tr>
                     <th>Date</th>
-                    <th>Total Sale (₹)</th>
+                    <th>Total Sale (&#8377;)</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($dailySales as $sale)
                     <tr>
                         <td>{{ \Carbon\Carbon::parse($sale->date)->format('d-m-Y') }}</td>
-                        <td>₹ {{ number_format($sale->total_sale, 2) }}</td>
+                        <td>&#8377; {{ number_format($sale->total_sale, 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>
@@ -32,38 +32,20 @@
             <thead>
                 <tr>
                     <th>Month</th>
-                    <th>Total Sale (₹)</th>
+                    <th>Total Sale (&#8377;)</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($monthlySales as $sale)
                     <tr>
                         <td>{{ \Carbon\Carbon::parse($sale->month)->format('F Y') }}</td>
-                        <td>₹ {{ number_format($sale->total_sale, 2) }}</td>
+                        <td>&#8377; {{ number_format($sale->total_sale, 2) }}</td>
                     </tr>
                 @endforeach
             </tbody>
         </table>
     </div>
 
-    <!-- Table for Application with Most Sales -->
-    <div>
-        <h3>Application with Most Sales</h3>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Application Name</th>
-                    <th>Total Sale (₹)</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>{{ $topApplication->name }}</td>
-                    <td>₹ {{ number_format($topApplication->total_sale, 2) }}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
 </div>
 @endsection
 

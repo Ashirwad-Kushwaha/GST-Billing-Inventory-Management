@@ -7,18 +7,30 @@ use Illuminate\Database\Eloquent\Model;
 
 class Application extends Model
 {
-    use HasFactory;
+use HasFactory;
 
-    protected $fillable = [
-        'title',
-        'description',
-        'date',
-        'to',
-        'subject',
-    ];
+protected $fillable = [
+'title',
+'description',
+'date',
+'to',
+'subject',
+'user_id', // Add user_id to fillable
+];
 
-    public function bills()
-    {
-        return $this->hasMany(Bill::class);
-    }
+/**
+* Get the user that owns the application.
+*/
+public function user()
+{
+return $this->belongsTo(User::class); // Define the relationship to the User model
+}
+
+/**
+* Get the bills for the application.
+*/
+public function bills()
+{
+return $this->hasMany(Bill::class);
+}
 }

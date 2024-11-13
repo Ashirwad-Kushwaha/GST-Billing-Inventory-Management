@@ -28,18 +28,13 @@
     </form>
 </div>
 
-<!-- Include CKEditor or any other rich text editor -->
-<script src="https://cdn.ckeditor.com/4.16.2/standard/ckeditor.js"></script>
 <script>
-    // Initialize CKEditor
-    CKEDITOR.replace('description');
-
     // Form validation function
     function validateForm() {
-        // Get the data from CKEditor
-        var editorData = CKEDITOR.instances.description.getData();
+        // Get the value of the description field
+        var description = document.getElementById('description').value;
 
-        if (!editorData.trim()) {
+        if (!description.trim()) {
             alert('Description field is required');
             return false; // Prevent form submission if description is empty
         }

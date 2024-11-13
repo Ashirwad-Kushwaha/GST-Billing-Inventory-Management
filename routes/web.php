@@ -31,6 +31,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/bills', [BillController::class, 'index'])->name('bills.index');
     Route::get('/bills/create', [BillController::class, 'showApplications'])->name('bills.create');
+    Route::get('bills/{application}/download/{bill}', [BillController::class, 'downloadPdf'])->name('bills.downloadPdf');
+
     Route::get('/sales', [SalesController::class, 'showSales'])->name('sales');
 
     // Inventory resource controller

@@ -7,13 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 
 class Inventory extends Model
 {
-    use HasFactory;
+use HasFactory;
 
-    protected $table = 'inventory';
+protected $table = 'inventory';
 
-    protected $fillable = [
-        'product_name',
-        'product_quantity',
-        'product_price',
-    ];
+protected $fillable = [
+'product_name',
+'product_quantity',
+'product_price',
+'user_id', // Add user_id to the fillable array
+];
+
+/**
+* Get the user that owns the inventory.
+*/
+public function user()
+{
+return $this->belongsTo(User::class); // Define the inverse relationship to the User model
+}
 }
